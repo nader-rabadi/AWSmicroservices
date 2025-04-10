@@ -79,7 +79,7 @@ This section describes an AWS-based microservice architecture that provides prod
 
 The microservice consists of three main AWS services:
 
-<img src="images/Slide1.jpg" alt="My image" style="width: 100%; max-width: 1500px; height: auto;"/>
+<img src="images/Slide1.JPG" alt="My image" style="width: 100%; max-width: 1500px; height: auto;"/>
 
 ### 1. Amazon API Gateway
 
@@ -125,7 +125,7 @@ This section describes an AWS-based microservice architecture for managing order
 
 The microservice consists of the following four AWS services:
 
-<img src="images/Slide2.jpg" alt="My image" style="width: 100%; max-width: 1500px; height: auto;"/>
+<img src="images/Slide2.JPG" alt="My image" style="width: 100%; max-width: 1500px; height: auto;"/>
 
 ### 1. Amazon API Gateway
 
@@ -191,7 +191,7 @@ This section describes the architecture of a serverless microservice that genera
 
 The microservice consists of the following six AWS services:
 
-<img src="images/Slide3.jpg" alt="My image" style="width: 100%; max-width: 1500px; height: auto;"/>
+<img src="images/Slide3.JPG" alt="My image" style="width: 100%; max-width: 1500px; height: auto;"/>
 
 ## Workflow Description
 
@@ -250,7 +250,7 @@ This AWS architecture diagram describes a microservice that facilitates user log
 
 This setup offers robust user authentication capabilities, scalability, and ease of integration with other services in the AWS ecosystem, ensuring secure communication between the frontend and backend, while adhering to best practices for OAuth2 and PKCE security protocols.
 
-<img src="images/Slide4.jpg" alt="My image" style="width: 100%; max-width: 1500px; height: auto;"/>
+<img src="images/Slide4.JPG" alt="My image" style="width: 100%; max-width: 1500px; height: auto;"/>
 
 ## Components:
 1. **Amazon API Gateway**:
