@@ -1,0 +1,30 @@
+[
+    {
+        "id": "1",
+        "product_name": "Peanut Chocolate",
+        "price": "2",
+        "inventory_count": "100",
+        "image": "product-1-image.jpeg"
+    },
+    {
+        "id": "2",
+        "product_name": "Half and Half",
+        "price": "3",
+        "inventory_count": "100",
+        "image": "product-2-image.jpeg"
+    },
+    {
+        "id": "3",
+        "product_name": "Chocolate Chip",
+        "price": "1",
+        "inventory_count": "100",
+        "image": "product-3-image.jpeg"
+    },
+    {
+        "id": "4",
+        "product_name": "Coconut Chocolate",
+        "price": "4",
+        "inventory_count": "100",
+        "image": "product-4-image.jpeg"
+    }
+]

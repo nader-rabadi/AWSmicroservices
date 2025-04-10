@@ -1,0 +1,493 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+
+  .customer-table th, .customer-table td {
+    padding: 8px;
+  }
+
+  .customer-table-container {
+    padding: 8px;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.banner{
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.banner-dark{
+  background-color: black;
+  color: white;
+}
+
+.banner-light{
+  background-color: white;
+  color: black;
+}
+
+.nav-menu{
+  background-color: gray;
+  color: white;
+  display: flex;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.nav-menu>*{
+  color: white;
+  text-decoration: none;
+}
+
+
+.nav-menu a {
+    float: left;
+    display: block;
+    color: white;
+    background-color: grey;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 25%;
+    text-decoration: none; /*stops the links from being underlined*/
+}
+
+.nav-menu a:hover {
+    background-color: darkblue;
+    color: white;
+}
+
+
+.products, .order-history, .order-details{
+  /* border: 2px solid black; */
+  border-top: none;
+  padding: .2rem;
+  flex: 3;
+}
+
+.products>h2, .sidebar>h2, .about-us>h2, .services>h2, .order-history>h2, .order-details>h2{
+  background-color: darkblue;
+  color: white;
+  padding: .5rem;
+  text-align: left;
+  font-family: Copperplate;
+}
+.products-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around; /* This will evenly space the product items across the line */
+  align-items: center; /* Center vertically */
+  width: 100%;              /* Ensure the container takes up the full available width */
+}
+
+.product-item {
+  flex: 0 1 30%; /* This sets the basis for each item to take about 30% of the line */
+  margin-bottom: 20px; /* Adds space below each item */
+  text-align: center; /* Center aligns the text and images */
+}
+
+.product-item img {
+  /* width: 100%; Make images responsive */
+  height: 200px; /* Maintain aspect ratio */
+  max-width: 200px; /* Limit image size */
+}
+
+.customer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* Horizontally center items */
+  justify-content: center; /* Vertically center items */
+  height: 100vh; /* Ensures the container takes up the full height of the viewport */
+}
+
+/* Style for the table container */
+.customer-table-container {
+  width: 100%;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #680e0e;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+}
+
+/* Basic table styling */
+.customer-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.customer-table th, .customer-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Table header styling */
+.customer-table th {
+  background-color: #4CAF50;
+  color: white;
+  font-weight: bold;
+}
+
+/* Row styling */
+.customer-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.customer-table tr:hover {
+  background-color: #ddd;
+}
+
+form{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin: 20px; /* add a margin around the form */
+}
+
+input[type="submit"] {
+  /* CSS properties go here */
+  background-color: #4CAF50;  /* Green background */
+  color: white;               /* White text */
+  padding: 14px 20px;         /* Padding around the text */
+  border: none;               /* No border */
+  border-radius: 4px;         /* Rounded corners */
+  cursor: pointer;            /* Pointer cursor on hover */
+  margin-top: 10px;
+}
+
+input[type="submit"]:hover {
+  background-color: #45a049;  /* Darker green background on hover */
+}
+
+.flex-mid{
+  display: flex;
+  /* border: 1px solid red; */
+}
+
+.sidebar{
+  flex: 1;
+  padding: .2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar .location-info{
+  background-color: lightgray;
+  padding: .5rem;
+  margin-bottom: 1.5rem;
+}
+
+.map-img-div{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.about-us>p{
+  background-color: lightgray;
+  padding: 1rem;
+  font-style: italic;
+}
+
+.about-us>img{
+  width: 100%;
+}
+
+.buttons>button{
+  padding: 4px 5px;         /* Padding around the text */
+  border: 1px solid black;               /* No border */
+  border-radius: 4px;         /* Rounded corners */
+  cursor: pointer;
+}
+
+.light-banner-btn{
+  background-color: lightgray;
+  color: black;
+  margin-right: 5px;
+}
+
+.dark-banner-btn{
+  background-color:lightgray;
+  color: black;
+}
+
+.buttons>button:hover {
+  background-color: gray;
+  color: white;
+}
+
+.services-row{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* gap: 4rem; */
+}
+
+.services-img{
+  flex: 2;
+  width: 100%;
+  margin-right: 4rem;
+}
+
+.services-cert{
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  /* border: 1px solid black; */
+}
+
+.services-cert>img{
+  height: 140px;
+}
+
+.services-img>img{
+  width: 100%;
+}
+
+.services-text{
+  flex: 2;
+  width: 25%;
+  text-align: left;
+}
+
+.footer{
+  background-color: black;
+  color: white;
+  padding: .3rem;
+  display: flex;
+  justify-content: center;
+  font-size: 12px;
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Optional: Centers the <p> elements horizontally */
+}
+
+.footer p {
+  margin: 0; /* Removes default margin */
+}
+
+.input-style {
+  width: 200px;
+  padding: 10px;
+  border: 5px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.navigation>ul{
+  display: flex;
+  gap: 10px;
+  justify-content: space-evenly;
+  background-color: gray;
+  color: white;
+  list-style: none;
+}
+
+
+.navigation a{
+  color: white;
+  font-size: 1.3em;
+  text-decoration: none;
+}
+
+nav ul li a:hover {
+  text-decoration: underline;
+}
+
+.table-container {
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #680e0e;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+thead {
+  background-color: #007bff;
+  color: white;
+
+}
+
+thead th {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 2px solid #ddd;
+}
+
+tbody tr {
+  border-bottom: 1px solid #ddd;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+tbody tr:hover {
+  background-color: #e9e9e9;
+}
+
+tbody td {
+  padding: 10px;
+}
+
+h3 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.loading-text {
+  font-size: 24px;
+}
+
+/* Customer info form */
+
+.form {
+  max-width: 800px; /* set a maximum width for the form */
+  margin: 0 auto; /* center the form horizontally */  
+}
+
+.form div {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.form label {
+  width: 200px;
+  margin-right: 10px;
+  text-align: right;
+}
+
+/* add a new class to wrap the labels and inputs */
+.form .form-group {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: center; /* center the container */
+}
+
+.form input[type="text"], .form input[type="email"], .form input[type="tel"] {
+  width: 100%;
+  height: 20px;
+  padding: 10px;
+  font-size: 20px;
+  border: 5px solid #ccc;
+}
+
+.form input[type="submit"] {
+  background-color: #e21e1e; /* Green background */
+  color: white; /* White text */
+  padding: 14px 20px; /* Padding around the text */
+  border: none; /* No border */
+  border-radius: 4px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  margin-top: 10px;
+}
+
+.form input[type="text"]:disabled {
+  background-color: #ccc; /* grey background */
+  opacity: 0.5; /* reduce opacity */
+  pointer-events: none; /* prevent mouse interactions */
+}
+
+.image-container {
+  height: 200px;  /* Adjust to the size of your image */
+  overflow: hidden; /* Prevents image from overflowing the container */
+}
+
+.image-container img {
+  width: 100%;  /* Ensures image stretches to fill the container */
+  height: auto;  /* Maintains aspect ratio */
+}
+
+.about-us-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Aligns the content to the top */
+  flex-wrap: wrap; /* Allows items to wrap onto the next line on smaller screens */
+  padding: 20px; /* Padding around the content */
+  box-sizing: border-box; /* Ensures padding doesn’t overflow the container */
+  background-color: #baf3afec; /* Optional: Light background color for contrast */
+}
+
+.about-us-box {
+  background-color: #fff; /* White background for the box */
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  width: 80%; /* You can adjust the width */
+  max-width: 600px; /* Max width to prevent it from being too large on wide screens */
+  text-align: center; /* Center text inside the box */
+}
+
+.about-us-box h1 {
+  font-size: 2rem; /* Adjust size of the heading */
+  margin-bottom: 20px;
+  color: #333; /* Dark color for the heading */
+}
+
+.about-us-box p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #555; /* Slightly lighter color for the body text */
+  margin-bottom: 15px;
+}
+
+.about-us-box strong {
+  font-weight: bold;
+}

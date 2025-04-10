@@ -1,0 +1,78 @@
+[
+    {
+        "id": "1",
+        "customer_name": "Customer1",
+        "email": "Customer1@email.com",
+        "phone": "123456789",
+        "total_amount": "17.00",
+        "ordered_items": [
+            {
+                "product_id": "2",
+                "product_name": "Half and Half",
+                "quantity": "3",
+                "amount": "9.00"
+            },
+            {
+                "product_id": "4",
+                "product_name": "Coconut Chocolate",
+                "quantity": "2",
+                "amount": "8.00"
+            }
+        ],        
+        "order_time": "2025-03-12T13:11:51.761Z"
+    },
+    {
+        "id": "2",
+        "customer_name": "Customer2",
+        "email": "Customer2@email.com",
+        "phone": "987654321",
+        "total_amount": "4.00",
+        "ordered_items": [
+            {
+                "product_id": "1",
+                "product_name": "Peanut Chocolate",
+                "quantity": "1",
+                "amount": "2.00"
+            },
+            {
+                "product_id": "3",
+                "product_name": "Chocolate Chip",
+                "quantity": "2",
+                "amount": "2.00"
+            }
+        ],
+        "order_time": "2025-03-11T14:22:35.421Z"
+    },
+    {
+        "id": "3",
+        "customer_name": "Customer3",
+        "email": "Customer3@email.com",
+        "phone": "456789123",
+        "total_amount": "6.00",
+        "ordered_items": [
+            {
+                "product_id": "1",
+                "product_name": "Peanut Chocolate",
+                "quantity": "3",
+                "amount": "6.00"
+            }    
+        ],        
+        "order_time": "2025-02-10T15:45:12.981Z"
+    },
+    {
+        "id": "4",
+        "customer_name": "Customer4",
+        "email": "Customer4@email.com",
+        "phone": "654321987",
+        "total_amount": "15.00",
+        "ordered_items": [
+            {
+                "product_id": "2",
+                "product_name": "Half and Half",
+                "quantity": "5",
+                "amount": "15.00"
+            }
+        ],        
+        "order_time": "2025-02-12T16:33:47.591Z"
+    }
+  ]

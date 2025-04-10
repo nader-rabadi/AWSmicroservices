@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "pkce-challenge": "^5.0.0"
+  }
+}

@@ -1,0 +1,648 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  product-backend
+
+  SAM Template for product-backend
+
+Parameters:
+  FrontendUrl:
+    Type: String
+    Description: The URL for the frontend application
+    Default: http://localhost:5173
+
+Resources:
+  ProductAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'http://localhost:5173'" # Tried: !Sub "'${FrontendUrl}'"
+        AllowCredentials: true      
+  
+  # Adding an HTTP method to API Gateway ProductAPI.
+  # The following configures an implicit API, which defines a single API Gateway endpoint method.
+  GetProductsLambda:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: handlers/get_products # Folder handlers/get_products
+      Handler: get_products.lambda_handler # Inside CodeUri, there is a Python file named get_products which has the lambda_handler function.
+      Timeout: 30
+      Runtime: python3.12
+      Role: !Sub 'arn:aws:iam::${AWS::AccountId}:role/LambdaApplicationRoleSam' # !Sub is called intrinsic function. {AWS::AccountId} is called pseaudo parameter.
+      Architectures:
+        - x86_64
+      Events:        # Define the events that trigger this lambda function
+        GetProducts: # Specifies API Gateway event name that triggers the lambda function
+          Type: Api  # The event source is API Gateway
+          Properties:
+            RestApiId: !Ref ProductAPI
+            Path: /products  # See the URL path
+            Method: get
+      Environment:
+        Variables:
+          PRODUCTS_TABLE: !Ref ProductsTable
+          FRONTEND_URL: !Ref FrontendUrl
+
+  GetProductLambda:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: handlers/get_product # Folder handlers/get_product
+      Handler: get_product.lambda_handler # Inside CodeUri, there is a Python file named get_product which has the lambda_handler function.
+      Runtime: python3.12
+      Role: !Sub 'arn:aws:iam::${AWS::AccountId}:role/LambdaApplicationRoleSam' # !Sub is called intrinsic function. {AWS::AccountId} is called pseaudo parameter.
+      Architectures:
+        - x86_64
+      Events:        # Define the events that trigger this lambda function
+        GetProduct:  # Specifies API Gateway event name that triggers the lambda function
+          Type: Api  # The event source is API Gateway
+          Properties:
+            RestApiId: !Ref ProductAPI
+            Path: /products/{id}  # See the URL path
+            Method: get
+      Environment:
+        Variables:
+          PRODUCTS_TABLE: !Ref ProductsTable
+          FRONTEND_URL: !Ref FrontendUrl
+
+  GetOrdersLambda:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: handlers/get_orders # Folder handlers/get_orders
+      Handler: get_orders.lambda_handler # Inside CodeUri, there is a Python file named get_orders which has the lambda_handler function.
+      Timeout: 30
+      Runtime: python3.12
+      Role: !Sub 'arn:aws:iam::${AWS::AccountId}:role/LambdaApplicationRoleSam' # !Sub is called intrinsic function. {AWS::AccountId} is called pseaudo parameter.
+      Architectures:
+        - x86_64
+      Events:        # Define the events that trigger this lambda function
+        GetOrders:   # Specifies API Gateway event name that triggers the lambda function
+          Type: Api  # The event source is API Gateway
+          Properties:
+            RestApiId: !Ref ProductAPI
+            Path: /orders  # See the URL path
+            Method: get
+      Environment:
+        Variables:
+          ORDERS_TABLE: !Ref OrdersTable
+          FRONTEND_URL: !Ref FrontendUrl
+
+  GetOrderLambda:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: handlers/get_order # Folder handlers/get_order
+      Handler: get_order.lambda_handler # Inside CodeUri, there is a Python file named get_order which has the lambda_handler function.
+      Runtime: python3.12
+      Role: !Sub 'arn:aws:iam::${AWS::AccountId}:role/LambdaApplicationRoleSam' # !Sub is called intrinsic function. {AWS::AccountId} is called pseaudo parameter.
+      Architectures:
+        - x86_64
+      Events:        # Define the events that trigger this lambda function
+        GetOrder:    # Specifies API Gateway event name that triggers the lambda function
+          Type: Api  # The event source is API Gateway
+          Properties:
+            RestApiId: !Ref ProductAPI
+            Path: /orders/{id}  # See the URL path
+            Method: get
+      Environment:
+        Variables:
+          ORDERS_TABLE: !Ref OrdersTable
+          FRONTEND_URL: !Ref FrontendUrl
+
+  CreateOrderLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: handlers/create_order
+      Handler: create_order.lambda_handler      
+      Runtime: python3.12
+      Role: !Sub 'arn:aws:iam::${AWS::AccountId}:role/LambdaApplicationRoleSam'
+      Architectures:
+        - x86_64      
+      Environment:
+        Variables:
+          STATE_MACHINE_ARN: !GetAtt StateMachineNewOrder.Arn
+          FRONTEND_URL: !Ref FrontendUrl
+      Events:
+        CreateOrder:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ProductAPI
+            Path: /orders
+            Method: post           
+
+  CheckOrderSubmissionLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: handlers/check_order_submission
+      Handler: check_order_submission.lambda_handler
+      Runtime: python3.12
+      Role: !Sub 'arn:aws:iam::${AWS::AccountId}:role/LambdaApplicationRoleSam'
+      Architectures:
+        - x86_64
+      Events:
+        CheckSubmissionStatus:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ProductAPI
+            Path: /orders/status/{executionArn}
+            Method: get
+      Environment:
+        Variables:
+          FRONTEND_URL: !Ref FrontendUrl
+
+  NewOrderLambda:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: handlers/new_order
+      Handler: new_order.lambda_handler
+      Timeout: 30
+      Runtime: python3.12
+      Role: !Sub 'arn:aws:iam::${AWS::AccountId}:role/LambdaApplicationRoleSam'
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          ORDERS_TABLE: !Ref OrdersTable 
+
+  UpdateInventoryLambda:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: handlers/update_inventory
+      Handler: update_inventory.lambda_handler
+      Timeout: 30
+      Runtime: python3.12
+      Role: !Sub 'arn:aws:iam::${AWS::AccountId}:role/LambdaApplicationRoleSam'
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          PRODUCTS_TABLE: !Ref ProductsTable
+
+  CreateReportLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: handlers/create_report
+      Handler: create_report.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/LambdaApplicationRoleSam"
+      Environment:
+        Variables:
+          STATE_MACHINE_ARN: !GetAtt StateMachineGenerateReport.Arn
+          FRONTEND_URL: !Ref FrontendUrl
+      Events:
+        CreateReport:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ProductAPI
+            Path: /create-report
+            Method: post
+
+  CheckReportSubmissionLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: handlers/check_report_submission
+      Handler: check_report_submission.lambda_handler
+      Runtime: python3.12
+      Role: !Sub 'arn:aws:iam::${AWS::AccountId}:role/LambdaApplicationRoleSam'
+      Architectures:
+        - x86_64
+      Events:
+        CheckSubmissionStatus:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ProductAPI
+            Path: /create-report/status/{executionArn}
+            Method: get
+      Environment:
+        Variables:
+          FRONTEND_URL: !Ref FrontendUrl
+
+  PrepareOrdersReportDataLambda:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: handlers/prepare_orders_report_data
+      Handler: prepare_orders_report_data.lambda_handler
+      Timeout: 30
+      Runtime: python3.12
+      Role: !Sub 'arn:aws:iam::${AWS::AccountId}:role/LambdaApplicationRoleSam'
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          ORDERS_TABLE: !Ref OrdersTable
+
+  PrepareOrdersReportHtmlLambda:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: handlers/prepare_orders_report_html
+      Handler: prepare_orders_report_html.lambda_handler
+      Timeout: 30
+      Runtime: python3.12
+      Role: !Sub 'arn:aws:iam::${AWS::AccountId}:role/LambdaApplicationRoleSam'
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          REPORTS_BUCKET: !Ref ReportsBucket
+
+  PrepareProductsReportDataLambda:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: handlers/prepare_products_report_data
+      Handler: prepare_products_report_data.lambda_handler
+      Timeout: 30
+      Runtime: python3.12
+      Role: !Sub 'arn:aws:iam::${AWS::AccountId}:role/LambdaApplicationRoleSam'
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          PRODUCTS_TABLE: !Ref ProductsTable
+
+  PrepareProductsReportHtmlLambda:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: handlers/prepare_products_report_html
+      Handler: prepare_products_report_html.lambda_handler
+      Timeout: 30
+      Runtime: python3.12
+      Role: !Sub 'arn:aws:iam::${AWS::AccountId}:role/LambdaApplicationRoleSam'
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          REPORTS_BUCKET: !Ref ReportsBucket          
+
+  GeneratePresignedUrlLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: handlers/generate_presigned_url
+      Handler: generate_presigned_url.lambda_handler
+      Runtime: python3.12
+      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/LambdaApplicationRoleSam"
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          REPORTS_BUCKET: !Ref ReportsBucket
+
+  # For testing only. Delete otherwise
+  GetPresignedUrlsLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: handlers/get_presigned_urls
+      Handler: get_presigned_urls.lambda_handler
+      Runtime: python3.12
+      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/LambdaApplicationRoleSam"
+      Architectures:
+        - x86_64
+      Events:
+        GetReports:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ProductAPI
+            Path: /get-presigned-urls/{executionArn}
+            Method: get
+      Environment:
+        Variables:
+          FRONTEND_URL: !Ref FrontendUrl       
+
+  ExchangeTokensLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: handlers/exchange_tokens
+      Handler: exchange_tokens.lambda_handler
+      Timeout: 30
+      Runtime: python3.12
+      Role: !Sub 'arn:aws:iam::${AWS::AccountId}:role/LambdaApplicationRoleSam'
+      Architectures:
+        - x86_64
+      Events:
+        CreateOrder:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ProductAPI
+            Path: /exchange-token
+            Method: post
+      Environment:
+        Variables:
+          FRONTEND_URL: !Ref FrontendUrl
+          COGNITO_DOMAIN: !Sub 'https://${CognitoUserPoolDomain}.auth.${AWS::Region}.amazoncognito.com'
+          USER_POOL: !Ref CognitoUserPool
+          USER_POOL_CLIENT_ID: !Ref CognitoUserPoolClient
+
+  # Defining DynamoDB Table that holds products list
+  ProductsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Products
+      AttributeDefinitions:
+        - AttributeName: id # Each product has its unique id
+          AttributeType: S         
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  # Defining DynamoDB Table that holds orders list
+  OrdersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Orders
+      AttributeDefinitions:
+        - AttributeName: id # Each order has its unique id
+          AttributeType: S         
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  StateMachineNewOrder:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      Role: !Sub 'arn:aws:iam::${AWS::AccountId}:role/StepFunctionsRoleSam'
+      DefinitionSubstitutions:
+        NewOrderLambdaArn: !GetAtt NewOrderLambda.Arn
+        UpdateInventoryLambdaArn: !GetAtt UpdateInventoryLambda.Arn
+      Definition:
+        Comment: State machine to store new order in DynamoDB Orders and then update the inventory count in DynamoDB Products
+        StartAt: NewOrderLambda
+        States:
+          NewOrderLambda:
+            Type: Task
+            Resource: '${NewOrderLambdaArn}'
+            Next: UpdateInventoryLambda
+          UpdateInventoryLambda:
+            Type: Task
+            Resource: '${UpdateInventoryLambdaArn}'
+            End: true
+
+  StateMachineGenerateReport:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      Role: !Sub 'arn:aws:iam::${AWS::AccountId}:role/StepFunctionsRoleSam'
+      DefinitionSubstitutions:
+        PrepareOrdersReportDataLambdaArn: !GetAtt PrepareOrdersReportDataLambda.Arn
+        PrepareOrdersReportHtmlLambdaArn: !GetAtt PrepareOrdersReportHtmlLambda.Arn
+        PrepareProductsReportDataLambdaArn: !GetAtt PrepareProductsReportDataLambda.Arn
+        PrepareProductsReportHtmlLambdaArn: !GetAtt PrepareProductsReportHtmlLambda.Arn
+        GeneratePresignedURLArn: !GetAtt GeneratePresignedUrlLambda.Arn
+        SNSTopicArn: !Ref SNSTopic
+      Definition:
+        Comment: State machine to generate an Email with a Report about orders and products
+        StartAt: GenerateReportHtml
+        States:
+          GenerateReportHtml:
+            Type: Parallel
+            Branches:
+              - StartAt: OrdersReport
+                States:
+                  OrdersReport:
+                    Type: Task
+                    Resource: '${PrepareOrdersReportDataLambdaArn}'
+                    ResultPath: '$.ordersReportResult'
+                    Next: CheckOrdersReportResult
+                  CheckOrdersReportResult:
+                    Type: Choice
+                    Choices:
+                      - Variable: $.ordersReportResult
+                        BooleanEquals: false
+                        Next: OrdersFailState
+                    Default: OrdersHtml
+                  OrdersHtml:
+                    Type: Task
+                    Resource: '${PrepareOrdersReportHtmlLambdaArn}'
+                    ResultPath: '$.ordersHtmlResult'
+                    Next: CheckOrdersHtmlResult
+                  CheckOrdersHtmlResult:
+                    Type: Choice
+                    Choices:
+                      - Variable: $.ordersHtmlResult
+                        BooleanEquals: false
+                        Next: OrdersFailState
+                    Default: OrdersSuccess
+                  OrdersSuccess:
+                    Type: Pass
+                    End: true
+                  OrdersFailState:
+                    Type: Fail
+                    Error: "States.ALL"
+                    Cause: "A failure occurred in orders branch"
+              - StartAt: ProductsData
+                States:
+                  ProductsData:
+                    Type: Task
+                    Resource: '${PrepareProductsReportDataLambdaArn}'
+                    ResultPath: '$.productsDataResult'
+                    Next: CheckProductsDataResult
+                  CheckProductsDataResult:
+                    Type: Choice
+                    Choices:
+                      - Variable: $.productsDataResult
+                        BooleanEquals: false
+                        Next: ProductsFailState
+                    Default: ProductsHtml
+                  ProductsHtml:
+                    Type: Task
+                    Resource: '${PrepareProductsReportHtmlLambdaArn}'
+                    ResultPath: '$.productsHtmlResult'
+                    Next: CheckProductsHtmlResult
+                  CheckProductsHtmlResult:
+                    Type: Choice
+                    Choices:
+                      - Variable: $.productsHtmlResult
+                        BooleanEquals: false
+                        Next: ProductsFailState
+                    Default: ProductsSuccess
+                  ProductsSuccess:
+                    Type: Pass
+                    End: true
+                  ProductsFailState:
+                    Type: Fail
+                    Error: "States.ALL"
+                    Cause: "A failure occurred in products branch"
+            Next: GeneratePresignedURL
+          GeneratePresignedURL:
+            Type: Task
+            Resource: "${GeneratePresignedURLArn}"
+            Next: TriggerSNS                   
+          TriggerSNS:
+            Type: Task
+            Resource: arn:aws:states:::sns:publish
+            Parameters:
+              TopicArn: !Ref SNSTopic
+              Message:
+                message1.$: "$.presigned_url_orders_str"
+                message2.$: "$.presigned_url_products_str"
+            ResultPath: "$.snsResult"  # Stores the SNS publish result
+            OutputPath: "$"  # Preserves the entire execution data including input and SNS result              
+            End: true
+
+  ImagesBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub images-${AWS::AccountId}
+      PublicAccessBlockConfiguration: #Sets "Block all public access" to "Off" for the bucket
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+  
+  ImagesBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties: 
+      Bucket: !Ref ImagesBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action: s3:GetObject
+            Effect: Allow
+            Resource: 
+              - !Sub arn:aws:s3:::${ImagesBucket}
+              - !Sub arn:aws:s3:::${ImagesBucket}/*
+            Principal: '*'                         
+
+  ReportsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub reportsbucket-${AWS::AccountId}
+      PublicAccessBlockConfiguration: #Sets "Block all public access" to "On" for the bucket
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  SNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: HtmlReportNotifications
+      TopicName: HtmlReportNotifications
+      KmsMasterKeyId: alias/aws/sns
+
+  # The following Cognito resources (CognitoUserPool, CognitoUserPoolClient, CognitoUserPoolDomain) will be
+  # created successfully when running 'sam deploy'. However, when I run my React application to test this
+  # Cognito resource, I get a response from it indicating: '403 Forbidden'. Until this issue is resolved,
+  # I manually create Cognito from AWS console, and manually copy the Cognito Client ID and Domain for use
+  # in ExchangeTokensLambda AWS Lambda python code.
+  # So, the Cognito resource below named product_app will be created but it will not be used.
+
+  # See AWS CloudFormation (not AWS SAM Resources) user guide for AWS Cognito settings in SAM template.
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: product_app
+      UsernameAttributes:
+        - email # Specifies that a user can use an email as a username when they sign up.
+      UsernameConfiguration:
+        CaseSensitive: false
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+          RequireUppercase: true
+      EmailConfiguration:
+        EmailSendingAccount: COGNITO_DEFAULT
+      AutoVerifiedAttributes:
+        - email
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: verified_email
+            Priority: 1
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true # if false, users can register themselves.
+  
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: product_app_client
+      UserPoolId: !Ref CognitoUserPool
+      AccessTokenValidity: 1 # default time unit is in hours
+      IdTokenValidity: 1
+      ExplicitAuthFlows:
+        - ALLOW_REFRESH_TOKEN_AUTH
+        - ALLOW_USER_AUTH
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_USER_PASSWORD_AUTH
+      PreventUserExistenceErrors: ENABLED
+      AllowedOAuthFlowsUserPoolClient: true  # to use OAuth 2.0 authorization server features
+      AllowedOAuthFlows:
+        - code # to use PKCE with /oauth2/token endpoint
+      AllowedOAuthScopes:
+        - email
+        - openid
+        - profile
+        - aws.cognito.signin.user.admin
+      CallbackURLs:
+        - !Join ["", [!Ref FrontendUrl, "/callback"]]
+      LogoutURLs:
+        - !Join ["", [!Ref FrontendUrl, "/callback"]]
+      SupportedIdentityProviders:
+        - COGNITO
+      GenerateSecret: false  # Set to false for public clients like React
+      TokenValidityUnits:
+        AccessToken: hours
+        IdToken: hours
+        RefreshToken: days
+
+  CognitoUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: !Sub "product-app-${AWS::AccountId}"
+      ManagedLoginVersion: 2
+      UserPoolId: !Ref CognitoUserPool
+
+Outputs:
+  GetProductsAPIEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage for get_products function"
+    Value: !Sub "https://${ProductAPI}.execute-api.${AWS::Region}.amazonaws.com/Prod/products"
+  GetProductAPIEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage for get_products function"
+    Value: !Sub "https://${ProductAPI}.execute-api.${AWS::Region}.amazonaws.com/Prod/products/{id}"    
+  GetOrdersAPIEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage for get_orders function"
+    Value: !Sub "https://${ProductAPI}.execute-api.${AWS::Region}.amazonaws.com/Prod/orders"
+  GetOrderAPIEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage for get_order function"
+    Value: !Sub "https://${ProductAPI}.execute-api.${AWS::Region}.amazonaws.com/Prod/orders/{id}"
+  CreateOrderAPIEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage for create_order function"
+    Value: !Sub "https://${ProductAPI}.execute-api.${AWS::Region}.amazonaws.com/Prod/orders"
+  CheckOrderSubmissionAPIEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage for check_order_submission function"
+    Value: !Sub "https://${ProductAPI}.execute-api.${AWS::Region}.amazonaws.com/Prod/orders/status/{executionArn}"    
+  CreateReportAPIEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage for create_report function"
+    Value: !Sub "https://${ProductAPI}.execute-api.${AWS::Region}.amazonaws.com/Prod/create-report"
+  CheckReportSubmissionAPIEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage for check_report_submission function"
+    Value: !Sub "https://${ProductAPI}.execute-api.${AWS::Region}.amazonaws.com/Prod/create-report/status/{executionArn}"     
+  StateMachineNewOrderArn:
+    Description: "Step Functions state machine arn for new order and update inventory"
+    Value: !GetAtt StateMachineNewOrder.Arn
+  StateMachineGenerateReportArn:
+    Description: "Step Functions state machine arn for generating html reports"
+    Value: !GetAtt StateMachineGenerateReport.Arn
+  ReportsBucketArn:
+    Description: "S3 Bucket to store html reports"
+    Value: !GetAtt ReportsBucket.Arn
+  ImagesBucketArn:
+    Description: "S3 Bucket to store web images"
+    Value: !GetAtt ImagesBucket.Arn    
+  CognitoUserPoolId:
+    Description: "Cognito User Pool ID"
+    Value: !Ref CognitoUserPool
+  CognitoUserPoolClientId:
+    Description: "Cognito User Pool Client ID"
+    Value: !Ref CognitoUserPoolClient
+  CognitoUserPoolDomain:
+    Description: "Cognito User Pool Domain"
+    Value: !Ref CognitoUserPoolDomain    
